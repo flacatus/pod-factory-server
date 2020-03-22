@@ -45,7 +45,7 @@ func (s *Server) registerHandlers() {
 	s.router.Handle("/metrics", promhttp.Handler())
 	s.router.HandleFunc("/env", s.envHandler).Methods("GET")
 	s.router.HandleFunc("/pods/{name}", s.pods).Methods("GET")
-	s.router.HandleFunc("/pods/", s.PodsAll).Methods("GET")
+	s.router.HandleFunc("/pods", s.PodsAll).Methods("GET")
 }
 
 func (s *Server) registerMiddlewares() {
