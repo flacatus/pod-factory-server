@@ -1,0 +1,7 @@
+jobs: 
+  include:
+    - os: linux
+
+language: golang
+go: "1.13"
+script: "ls -lrtha"
