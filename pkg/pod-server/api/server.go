@@ -3,6 +3,9 @@ package api
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/PodatorFactory/pod-factory-server/pkg/metrics"
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -10,8 +13,6 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
-	"net/http"
-	"time"
 )
 
 type Server struct {
@@ -20,6 +21,7 @@ type Server struct {
 	config *Config
 }
 
+// config..
 type Config struct {
 	HttpClientTimeout         time.Duration `mapstructure:"http-client-timeout"`
 	HttpServerTimeout         time.Duration `mapstructure:"http-server-timeout"`
