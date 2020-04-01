@@ -25,7 +25,7 @@ func NewPrometheusMiddleware() *PrometheusMiddleware {
 	histogram := prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Subsystem: "http",
 		Name:      "request_duration_seconds",
-		Help:      "Seconds spent serving HTTP requests.",
+		Help:      "Seconds spent serving HTTP requests...",
 		Buckets:   prometheus.DefBuckets,
 	}, []string{"method", "path", "status"})
 	// used for horizontal pod auto-scaling (Kubernetes HPA v2)
