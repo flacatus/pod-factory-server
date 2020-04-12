@@ -5,6 +5,6 @@ jobs:
 language: golang
 go: "1.13"
 script: "
-$FILE=git --no-pager diff --name-only FETCH_HEAD $(git merge-base FETCH_HEAD master)
+$FILE=$(git --no-pager diff --name-only FETCH_HEAD $(git merge-base FETCH_HEAD master))
 echo $FILE
 "
