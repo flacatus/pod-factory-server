@@ -13,6 +13,7 @@ set -e
 # Get all Modified/Created files in Pull Request.
 # Command:
 export PR_FILES_CHANGED='pkg/apis/org/v1/che_types.go pkg/amapola/org/v1beta/types.go deploy/crds/org_v1_che_cr.yaml deploy/crds/org_v1_che_cr.sh deploy/crds/org_v1_che_crd.yaml olm/.dockerignore olm/Readme.md olm/eclipse-che-preview-openshift/operator-source.yaml'
+git --no-pager diff --name-only FETCH_HEAD $(git merge-base FETCH_HEAD master)
 export EXAMPLE=$(git --no-pager diff --name-only FETCH_HEAD $(git merge-base FETCH_HEAD master))
 echo $EXAMPLE
 # check_che_types function check first if pkg/apis/org/v1/che_types.go file suffer modifications and
