@@ -13,6 +13,7 @@ set -e
 # Get all Modified/Created files in Pull Request.
 # Command:
 export PR_FILES_CHANGED=$(git --no-pager diff --name-only HEAD $(git merge-base HEAD master))
+declare -a $PR_FILES_CHANGED
 echo ${PR_FILES_CHANGED}
 # check_che_types function chdeck first if pkg/apis/org/v1/che_types.go file suffer modifications and
 # in case of modification should exist also modifications in deploy/crds/* folder.
