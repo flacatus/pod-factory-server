@@ -13,25 +13,26 @@ set -e
 # Get all Modified/Created files in Pull Request.
 # Command:
 export PR_FILES_CHANGED=$(git --no-pager diff --name-only HEAD $(git merge-base HEAD master))
-declare -a $PR_FILES_CHANGED
-echo ${PR_FILES_CHANGED}
 # check_che_types function chdeck first if pkg/apis/org/v1/che_types.go file suffer modifications and
 # in case of modification should exist also modifications in deploy/crds/* folder.
+function transform_files() {
+    for files in ${PR_FILES_CHANGED} 
+    do 
+        FILES_CHANGED_ARRAY+=($files)
+    done 
+}
+
 function check_che_types() {
     # CHE_TYPES_FILE make reference to generated code by operator-sdk.
-    local CHE_TYPES_FILE='\S*che_types.go'
+    local CHE_TYPES_FILE='pkg/apis/org/v1/che_types.go'
     # Export variables for cr/crds files.
     local CR_CRD_FOLDER="deploy/crds/"
     local CR_CRD_REGEX="\S*org_v1_che_crd.yaml"
-    for  filex in "${PR_FILES_CHANGED[@]}" 
-    do 
-        echo $filex
-    done 
-   
-    if [[ " ${PR_FILES_CHANGED[@]} " =~ " ${CHE_TYPES_FILE} " ]]; then
+
+    if [[ " ${FILES_CHANGED_ARRAY[@]} " =~ " ${CHE_TYPES_FILE} " ]]; then
         echo "[INFO] File ${CHE_TYPES_FILE} suffer modifications in PR. Checking if exist modifications for cr/crd files."
         # The script should fail if deploy/crds folder didn't suffer any modification.
-        if [[ " ${PR_FILES_CHANGED[@]} " =~ $CR_CRD_REGEX ]]; then
+        if [[ " ${FILES_CHANGED_ARRAY[@]} " =~ $CR_CRD_REGEX ]]; then
             echo "[INFO] CR/CRD file modified: ${BASH_REMATCH}"
         else
             echo "[ERROR] Detected modification in ${CHE_TYPES_FILE} file, but cr/crd files didn't suffer any modification."
@@ -41,15 +42,25 @@ function check_che_types() {
 }
 
 function check_deploy_folder() {
-        # The script should fail if deploy/crds folder didn't suffer any modification.
-    local CR_CRD_FOLDER="olm/"
+    local CR_CRD_FOLDER="deploy/"
     local CR_CRD_REGEX="\b$CR_CRD_FOLDER.*?\b"
-    if [[ " ${PR_FILES_CHANGED[@]} " =~ $CR_CRD_REGEX ]]; then
-        echo "[INFO] CR/CRD file modified: ${BASH_REMATCH}"
-        echo  ${BASH_REMATCH}
-    else
-        echo "[ERROR] Detected modification in ${CHE_TYPES_FILE} file, but cr/crd files didn't suffer any modification."
-        exit 1
+    local OLM_OPENSHIFT="olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift"
+    local OLM_OC="\b$OLM_OPENSHIFT.*?\b"
+    local OLM_KUBERNETES="olm/eclipse-che-preview-kubernetes/deploy/olm-catalog/eclipse-che-preview-kubernetes"
+
+    if [[ " ${FILES_CHANGED_ARRAY[@]} " =~ $CR_CRD_REGEX ]]; then
+        echo "Deploy Folder suffer modifications"
+        
+        if [[ " ${PR_FILES_CHANGED[@]} " =~ $OLM_OC ]]; then
+            echo "Deploy Folder suffer modifications"
+        else 
+            echo "Dont Exist"
+        fi
+
     fi
+    echo ${arr[@]}
 }
+
+transform_files
 check_che_types
+check_deploy_folder
