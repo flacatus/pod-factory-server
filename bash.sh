@@ -18,7 +18,7 @@ echo ${PR_FILES_CHANGED}
 # in case of modification should exist also modifications in deploy/crds/* folder.
 function check_che_types() {
     # CHE_TYPES_FILE make reference to generated code by operator-sdk.
-    local CHE_TYPES_FILE='pkg/apis/org/v1/che_types.go'
+    local CHE_TYPES_FILE='\Spkg/apis/org/v1/che_types.go'
     # Export variables for cr/crds files.
     local CR_CRD_FOLDER="deploy/crds/"
     local CR_CRD_REGEX="\S*org_v1_che_crd.yaml"
