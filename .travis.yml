@@ -4,4 +4,4 @@ jobs:
 
 language: golang
 go: "1.13"
-script: " sh bash.sh "
+script: " /bin/bash bash.sh "
