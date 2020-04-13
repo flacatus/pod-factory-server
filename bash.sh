@@ -12,10 +12,8 @@
 set -e
 # Get all Modified/Created files in Pull Request.
 # Command:
-export PR_FILES_CHANGED='pkg/apis/org/v1/che_types.go pkg/amapola/org/v1beta/types.go deploy/crds/org_v1_che_cr.yaml deploy/crds/org_v1_che_cr.sh deploy/crds/org_v1_che_crd.yaml olm/.dockerignore olm/Readme.md olm/eclipse-che-preview-openshift/operator-source.yaml'
-git --no-pager diff --name-only HEAD $(git merge-base HEAD master)
-export EXAMPLE=$(git --no-pager diff --name-only HEAD $(git merge-base HEAD master))
-echo $EXAMPLE
+export PR_FILES_CHANGED=$(git --no-pager diff --name-only HEAD $(git merge-base HEAD master))
+
 # check_che_types function chdeck first if pkg/apis/org/v1/che_types.go file suffer modifications and
 # in case of modification should exist also modifications in deploy/crds/* folder.
 function check_che_types() {
@@ -35,6 +33,7 @@ function check_che_types() {
         fi
     fi
 }
+
 function check_deploy_folder() {
         # The script should fail if deploy/crds folder didn't suffer any modification.
     local CR_CRD_FOLDER="olm/"
