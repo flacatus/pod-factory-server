@@ -22,10 +22,10 @@ function check_che_types() {
     # Export variables for cr/crds files.
     local CR_CRD_FOLDER="deploy/crds/"
     local CR_CRD_REGEX="\S*org_v1_che_crd.yaml"
-    for b in ${PR_FILES_CHANGED[@]}
-        echo $b
-    do
-    done
+    for  filex in "${PR_FILES_CHANGED[@]}" 
+    do 
+        echo $filex
+    done 
    
     if [[ " ${PR_FILES_CHANGED[@]} " =~ " ${CHE_TYPES_FILE} " ]]; then
         echo "[INFO] File ${CHE_TYPES_FILE} suffer modifications in PR. Checking if exist modifications for cr/crd files."
