@@ -9,12 +9,13 @@
 #
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
+
 set -e
-# Get all Modified/Created files in Pull Request.
-# Command:
+
+# PR_FILES_CHANGED store all Modified/Created files in Pull Request.
 export PR_FILES_CHANGED=$(git --no-pager diff --name-only HEAD $(git merge-base HEAD master))
-# check_che_types function chdeck first if pkg/apis/org/v1/che_types.go file suffer modifications and
-# in case of modification should exist also modifications in deploy/crds/* folder.
+
+# transform_files function transform PR_FILES_CHANGED into a new array => FILES_CHANGED_ARRAY.
 function transform_files() {
     for files in ${PR_FILES_CHANGED} 
     do 
@@ -22,6 +23,8 @@ function transform_files() {
     done 
 }
 
+# check_che_types function check first if pkg/apis/org/v1/che_types.go file suffer modifications and
+# in case of modification should exist also modifications in deploy/crds/* folder.
 function check_che_types() {
     # CHE_TYPES_FILE make reference to generated code by operator-sdk.
     local CHE_TYPES_FILE='pkg/apis/org/v1/che_types.go'
@@ -38,27 +41,40 @@ function check_che_types() {
             echo "[ERROR] Detected modification in ${CHE_TYPES_FILE} file, but cr/crd files didn't suffer any modification."
             exit 1
         fi
+    else
+        echo "[INFO] ${CHE_TYPES_FILE} didn't have any modification."
     fi
 }
 
+#check_deploy_folder check first if files under deploy/* folder have modifications and in case of modification
+# check if exist nightly files for kubernetes and openshift platform.
 function check_deploy_folder() {
+    # Define deploy folder and regexp to search all under deploy/*
     local CR_CRD_FOLDER="deploy/"
     local CR_CRD_REGEX="\b$CR_CRD_FOLDER.*?\b"
-    local OLM_OPENSHIFT="olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift"
-    local OLM_OC="\b$OLM_OPENSHIFT.*?\b"
-    local OLM_KUBERNETES="olm/eclipse-che-preview-kubernetes/deploy/olm-catalog/eclipse-che-preview-kubernetes"
 
+    # Define olm-catalog folder and regexp to check if exist nightly files for kubernetes
+    local OLM_KUBERNETES='olm/eclipse-che-preview-kubernetes/deploy/olm-catalog/eclipse-che-preview-kubernetes/'
+    local OLM_K8S="\b$OLM_KUBERNETES.*?\b"
+
+    # Define olm-catalog folder and regexp to check if exist nightly files for openshift
+    local OLM_OPENSHIFT='olm/eclipse-che-preview-openshift/deploy/olm-catalog/eclipse-che-preview-openshift/'
+    local OLM_OCP="\b$OLM_OPENSHIFT.*?\b"
+
+    # Checking if exist modifications in deploy folder
     if [[ " ${FILES_CHANGED_ARRAY[@]} " =~ $CR_CRD_REGEX ]]; then
-        echo "Deploy Folder suffer modifications"
-        
-        if [[ " ${PR_FILES_CHANGED[@]} " =~ $OLM_OC ]]; then
-            echo "Deploy Folder suffer modifications"
-        else 
-            echo "Dont Exist"
-        fi
+        echo "[INFO] Deploy Folder suffer modifications"
 
+        if [[ " ${FILES_CHANGED_ARRAY[@]} " =~ $OLM_K8S && " ${FILES_CHANGED_ARRAY[@]} " =~ $OLM_OCP ]]; then
+            echo "[INFO] Nightly files for kubernetes and openshift platform was created."
+        else
+            echo "[ERROR] Nightly files for kubernetes and openshift platform not created."
+            exit 1
+
+        fi
+    else
+        echo "[INFO] ${CR_CRD_FOLDER} didn't have any modification...Skipping verification for nightly files creation."
     fi
-    echo ${arr[@]}
 }
 
 transform_files
