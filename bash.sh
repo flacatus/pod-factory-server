@@ -64,7 +64,7 @@ function check_deploy_folder() {
     # Checking if exist modifications in deploy folder
     if [[ " ${FILES_CHANGED_ARRAY[@]} " =~ $CR_CRD_REGEX ]]; then
         echo "[INFO] Deploy Folder suffer modifications"
-
+        echo ${FILES_CHANGED_ARRAY[@]}
         if [[ " ${FILES_CHANGED_ARRAY[@]} " =~ $OLM_K8S && " ${FILES_CHANGED_ARRAY[@]} " =~ $OLM_OCP ]]; then
             echo "[INFO] Nightly files for kubernetes and openshift platform was created."
         else
