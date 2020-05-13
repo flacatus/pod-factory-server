@@ -1,7 +1,16 @@
-jobs: 
-  include:
-    - os: linux
+sudo: required
+env:
+  #matrix:
+  - OS_TYPE=centos OS_VERSION=7
 
-language: golang
-go: "1.13"
-script: " /bin/bash bash.sh "
+branches:
+  only:
+  - master
+#  - stable
+
+script:
+ # Run tests in Container
+ - sudo yum -y update
+
+notifications:
+  email: false
