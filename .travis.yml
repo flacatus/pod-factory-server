@@ -4,4 +4,7 @@ jobs:
 
 language: golang
 go: "1.13"
-script: "git --no-pager diff --name-only FETCH_HEAD $(git merge-base FETCH_HEAD master)"
+script: "
+  sudo apt install qemu qemu-kvm libvirt-bin  bridge-utils  virt-manager
+  sudo service libvirtd start
+"
