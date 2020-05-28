@@ -5,9 +5,6 @@ jobs:
 language: golang
 go: "1.13"
 env:
-  - LIBVIRT=2.5.0  EXT=xz
-  - LIBVIRT=3.10.0  EXT=xz
-  - LIBVIRT=4.10.0  EXT=xz
   - LIBVIRT=5.5.0  EXT=xz
 install:
   - sudo apt-get -qqy build-dep libvirt
@@ -29,8 +26,25 @@ install:
   - sudo virtlogd -d || true
   - sudo chmod a+rwx /var/run/libvirt/libvirt-sock*
   - echo "pass" | sudo saslpasswd2 -p -a libvirt user
+  - sudo apt install qemu-kvm libvirt-daemon libvirt-daemon-system network-manager
+  - export CRC_VERSION=latest
+  - export SecretFile=pull-secrets.txt
+  - export RAM_MEMORY=16384
+  - export CPUS=4
+
+  - set -e -x
+  - curl -SLO  https://mirror.openshift.com/pub/openshift-v4/clients/crc/${CRC_VERSION}/crc-linux-amd64.tar.xz
+  - tar -xvf crc-linux-amd64.tar.xz --strip-components=1
+  - chmod +x ./crc
+  - mv ./crc /usr/local/bin/crc
+
+  - crc version
+  - crc config set skip-check-root-user true
+  - crc config set nameserver 8.8.8.8
+  - crc setup
+  - crc start --cpus=${CPUS} --memory=${RAM_MEMORY} --pull-secret-file=${SecretFile} --log-level debug
+
 
 script: "
-  sudo apt install qemu qemu-kvm libvirt-bin  bridge-utils  virt-manager
-  sudo service libvirtd start
+  ls
 "
